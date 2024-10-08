@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soltrace Shipping App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #9b59b6, #ff69b4);
+            color: white;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        .logo-image {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 10px;
+            overflow: hidden;
+        }
+        .logo-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .logo-text {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .home-button {
+            background-color: white;
+            color: #9b59b6;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+        .content {
+            display: flex;
+            gap: 30px;
+        }
+        .package-info {
+            flex: 1;
+            background-color: #4a0e4e;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        input {
+            width: calc(100% - 20px); /* Subtracting right margin */
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            margin-right: 20px; /* Added right margin */
+        }
+        .submit-button {
+            width: 100%;
+            padding: 10px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .options {
+            flex: 2;
+        }
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .search-container {
+            flex: 1;
+            position: relative;
+        }
+        .search-input {
+            width: calc(100% - 30px); /* Adjusted for right padding and margin */
+            padding: 10px;
+            padding-right: 30px;
+            border: none;
+            border-radius: 20px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            margin-right: 0; /* Reset margin for search input */
+        }
+        .search-icon {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .filter-button {
+            background-color: white;
+            color: #9b59b6;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+        .courier-card {
+            background-color: white;
+            color: #333;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .courier-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .courier-name {
+            font-weight: bold;
+        }
+        .rating {
+            color: #f1c40f;
+        }
+        .courier-details {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .detail-label {
+            font-weight: bold;
+        }
+        .courier-actions {
+            display: flex;
+            justify-content: space-between;
+        }
+        .view-details-button {
+            color: #3498db;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        .request-quote-button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <div class="logo-image">
+                    <img src="images/logo.png" alt="Soltrace Logo">
+                </div>
+                <h1 class="logo-text">Soltrace</h1>
+            </div>
+            <button class="home-button">Home ▼</button>
+        </header>
+
+        <div class="content">
+            <div class="package-info">
+                <h2>Package Info</h2>
+                <form id="packageForm">
+                    <div class="form-group">
+                        <label>Tell us more about your shipment.</label>
+                        <input type="text" id="departingCity" placeholder="City Departing From">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="destinationCity" placeholder="City Sending To">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="weight" placeholder="Total Weight (kg)">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="dimensions" placeholder="Dimensions: Width(m) x Height(m)">
+                    </div>
+                    <button type="submit" class="submit-button">Submit</button>
+                </form>
+            </div>
+
+            <div class="options">
+                <h2>Here's some options for you to consider...</h2>
+                <div class="filters">
+                    <div class="search-container">
+                        <input type="text" class="search-input" placeholder="Search...">
+                        <span class="search-icon">🔍</span>
+                    </div>
+                    <button class="filter-button">Currency ▼</button>
+                    <button class="filter-button">Filters ▼</button>
+                </div>
+                <div id="courierList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const couriers = [
+            { name: 'Lalamove', rating: 4, ocean: true, air: true, coverage: 'Nationwide Only', pricing: '100 - 200 MYR' },
+            { name: 'Amazon', rating: 5, ocean: false, air: true, coverage: 'International', pricing: '800 - 900 MYR' },
+            { name: 'FedEx', rating: 3, ocean: true, air: false, coverage: 'Nationwide Only', pricing: '300 - 400 MYR' },
+        ];
+
+        function renderCouriers() {
+            const courierList = document.getElementById('courierList');
+            courierList.innerHTML = '';
+
+            couriers.forEach(courier => {
+                const courierCard = document.createElement('div');
+                courierCard.className = 'courier-card';
+                courierCard.innerHTML = `
+                    <div class="courier-header">
+                        <h3 class="courier-name">Courier Name: ${courier.name}</h3>
+                        <div class="rating">${'★'.repeat(courier.rating)}${'☆'.repeat(5 - courier.rating)}</div>
+                    </div>
+                    <div class="courier-details">
+                        <div>
+                            <p class="detail-label">Mode of Delivery</p>
+                            <p>${courier.ocean ? '🚢' : ''}${courier.air ? '✈️' : ''}</p>
+                        </div>
+                        <div>
+                            <p class="detail-label">Coverage</p>
+                            <p>${courier.coverage}</p>
+                        </div>
+                        <div>
+                            <p class="detail-label">Pricing (per kg)</p>
+                            <p>${courier.pricing}</p>
+                        </div>
+                    </div>
+                    <div class="courier-actions">
+                        <button class="view-details-button">View Details</button>
+                        <button class="request-quote-button">Request Quote ▼</button>
+                    </div>
+                `;
+                courierList.appendChild(courierCard);
+            });
+        }
+
+        document.getElementById('packageForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const departingCity = document.getElementById('departingCity').value;
+            const destinationCity = document.getElementById('destinationCity').value;
+            const weight = document.getElementById('weight').value;
+            const dimensions = document.getElementById('dimensions').value;
+
+            console.log('Form submitted:', { departingCity, destinationCity, weight, dimensions });
+            // Here you would typically send this data to a server or perform further actions
+        });
+
+        renderCouriers();
+    </script>
+</body>
+</html>
